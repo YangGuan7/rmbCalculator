@@ -1,11 +1,303 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>人民幣匯率計算器</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Microsoft JhengHei", "PingFang TC", sans-serif;
+      background: linear-gradient(180deg, #f5f7fb 0%, #eef4ff 100%);
+      color: #1f2937;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 520px;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+      padding: 28px;
+    }
+
+    .title {
+      margin: 0 0 8px;
+      font-size: 28px;
+      font-weight: 800;
+      text-align: center;
+      color: #111827;
+    }
+
+    .desc {
+      margin: 0 0 24px;
+      text-align: center;
+      color: #6b7280;
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 15px;
+      font-weight: 700;
+      color: #374151;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    input {
+      width: 100%;
+      height: 48px;
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      padding: 0 14px;
+      font-size: 16px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      background: #fff;
+    }
+
+    input:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+    }
+
+    .btn {
+      width: 100%;
+      height: 50px;
+      border: none;
+      border-radius: 12px;
+      background: #2563eb;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s, background 0.2s;
+      margin-top: 8px;
+    }
+
+    .btn:hover {
+      background: #1d4ed8;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .result {
+      margin-top: 24px;
+      background: #f8fafc;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      padding: 18px;
+    }
+
+    .result-title {
+      font-size: 18px;
+      font-weight: 800;
+      margin: 0 0 14px;
+      color: #111827;
+    }
+
+    .result-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px dashed #dbe2ea;
+    }
+
+    .result-row:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .result-label {
+      color: #4b5563;
+      font-size: 15px;
+    }
+
+    .result-value {
+      font-size: 16px;
+      font-weight: 700;
+      color: #111827;
+      text-align: right;
+    }
+
+    .highlight {
+      color: #dc2626;
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .hint {
+      margin-top: 16px;
+      padding: 14px 16px;
+      border-radius: 12px;
+      background: #eff6ff;
+      color: #1e40af;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .error {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: #fef2f2;
+      color: #b91c1c;
+      font-size: 14px;
+      display: none;
+    }
+
+    @media (max-width: 480px) {
+      .card {
+        padding: 22px 18px;
+      }
+
+      .title {
+        font-size: 24px;
+      }
+
+      .result-row {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .result-value {
+        text-align: left;
+      }
+    }
+  </style>
 </head>
 <body>
-    
+  <div class="card">
+    <h1 class="title">人民幣匯率計算器</h1>
+    <p class="desc">
+      未滿 200 RMB：加 1.6% 手續費<br>
+      超過 200 RMB：加 1.6% + 3% 手續費
+    </p>
+
+    <div class="form-group">
+      <label for="rate">今天匯率</label>
+      <div class="input-wrap">
+        <input type="number" id="rate" step="0.0001" placeholder="例如：4.63" />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="amount">金額（人民幣）</label>
+      <div class="input-wrap">
+        <input type="number" id="amount" step="0.01" placeholder="例如：28 或 200" />
+      </div>
+    </div>
+
+    <button class="btn" id="calcBtn" type="button">開始計算</button>
+
+    <div class="error" id="errorMsg">請輸入正確的匯率與金額。</div>
+
+    <div class="result" id="resultBox">
+      <h2 class="result-title">計算結果</h2>
+
+      <div class="result-row">
+        <div class="result-label">套用手續費</div>
+        <div class="result-value" id="feeText">--</div>
+      </div>
+
+      <div class="result-row">
+        <div class="result-label">實際匯率</div>
+        <div class="result-value" id="finalRate">--</div>
+      </div>
+
+      <div class="result-row">
+        <div class="result-label">總價（台幣）</div>
+        <div class="result-value highlight" id="totalTwd">--</div>
+      </div>
+    </div>
+
+    <div class="hint">
+      小提醒：目前規則是「超過 200」才加 3%。<br>
+      也就是說，剛好 200 RMB 時，現在這版會只加 1.6%。
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const rateInput = document.getElementById("rate");
+      const amountInput = document.getElementById("amount");
+      const calcBtn = document.getElementById("calcBtn");
+      const errorMsg = document.getElementById("errorMsg");
+
+      const feeText = document.getElementById("feeText");
+      const finalRate = document.getElementById("finalRate");
+      const totalTwd = document.getElementById("totalTwd");
+
+      function formatNumber(num, digits = 2) {
+        return Number(num).toLocaleString("zh-TW", {
+          minimumFractionDigits: digits,
+          maximumFractionDigits: digits
+        });
+      }
+
+      function calculate() {
+        const rate = parseFloat(rateInput.value);
+        const amount = parseFloat(amountInput.value);
+
+        if (!rate || rate <= 0 || !amount || amount <= 0) {
+          errorMsg.style.display = "block";
+          feeText.textContent = "--";
+          finalRate.textContent = "--";
+          totalTwd.textContent = "--";
+          return;
+        }
+
+        errorMsg.style.display = "none";
+
+        const baseFee = 0.016;
+        const extraFee = amount > 200 ? 0.03 : 0;
+        const totalFeeRate = baseFee + extraFee;
+
+        const realRate = rate * (1 + totalFeeRate);
+        const totalPrice = amount * realRate;
+
+        let feeLabel = "1.6%";
+        if (amount > 200) {
+          feeLabel = "1.6% + 3% = 4.6%";
+        }
+
+        feeText.textContent = feeLabel;
+        finalRate.textContent = formatNumber(realRate, 4);
+        totalTwd.textContent = "NT$ " + formatNumber(totalPrice, 2);
+      }
+
+      calcBtn.addEventListener("click", calculate);
+
+      rateInput.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") calculate();
+      });
+
+      amountInput.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") calculate();
+      });
+    })();
+  </script>
 </body>
 </html>
